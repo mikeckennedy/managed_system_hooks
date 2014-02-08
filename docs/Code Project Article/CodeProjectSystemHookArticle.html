@@ -1,0 +1,381 @@
+<!--------------------------------------------------------------------------->
+<!--                           INTRODUCTION                                
+
+ The Code Project article submission template (HTML version)
+
+Using this template will help us post your article sooner. To use, just 
+follow the 3 easy steps below:
+ 
+     1. Fill in the article description details
+     2. Add links to your images and downloads
+     3. Include the main article text
+
+That's all there is to it! All formatting will be done by our submission
+scripts and style sheets. 
+
+-->
+<!--------------------------------------------------------------------------->
+<!--                        IGNORE THIS SECTION                            --><html><head>
+		<title>The Code Project</title>
+		<STYLE> BODY, P, TD { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt }
+	H2,H3,H4,H5 { color: #ff9900; font-weight: bold; }
+	H2 { font-size: 13pt; }
+	H3 { font-size: 12pt; }
+	H4 { font-size: 10pt; color: black; }
+	PRE { BACKGROUND-COLOR: #FBEDBB; FONT-FAMILY: "Courier New", Courier, mono; WHITE-SPACE: pre; }
+	CODE { COLOR: #990000; FONT-FAMILY: "Courier New", Courier, mono; }
+	</STYLE>
+		<link href="http://www.codeproject.com/styles/global.css" type="text/css" rel="stylesheet"></head>
+	<body bgColor="#ffffff" color="#000000">
+		<!--------------------------------------------------------------------------->
+		<!-------------------------------     STEP 1      --------------------------->
+		<!--  Fill in the details (CodeProject will reformat this section for you) -->
+		<pre>
+Title:       Global System Hooks in .NET 
+Author:      Michael Kennedy
+Email:       mkennedy@unitedbinary.com 
+Environment: Visual Studio.NET, Windows XP/2000/2003/98
+Keywords:    Hook, System Hook, C#, Interop, Delegate, Delegates, NDoc, Unit Test, Unit Testing, HarnessIt, XML Documentation, Managed C++
+Level:       Intermediate
+Description: A class library for using *global* system hooks in .NET.
+Section:     .NET
+SubSection:  C# Programming &gt;&gt; PInvoke
+</pre>
+		<!-------------------------------     STEP 2      --------------------------->
+		<!--  Include download and sample image information.                       -->
+		<ul class="download">
+			<li>
+				<A href="SystemHooksCompiledOnly.zip">Download demo project - 102 KB </A>
+			<li>
+				<A href="SystemHooks.zip">Download source - 231 KB</A>
+			</li>
+		</ul>
+		<p>&nbsp; &nbsp; <IMG height="417" alt="System Hook Sample Application" src="SystemHookSampleApp.jpg"
+				width="313"></p>
+		<!-------------------------------     STEP 3      --------------------------->
+		<!--  Add the article text. Please use simple formatting (<h2>, <p> etc)   -->
+		<h2>Introduction</h2>
+		<P>This article discusses the use of <STRONG>global</STRONG>
+		system hooks in .NET applications. A reusable class library is developed along 
+		the way.
+		<P>You may have noticed other articles on using system hooks with PInvoke on Code 
+			Project or other publications (see background section below). This article is 
+			similar to those but there is a significant difference. This article is covers 
+			using global system hooks in .NET whereas the other articles cover local system 
+			hooks. The ideas are similar but the implementation is different.
+			<h2>Background</h2>
+		<p>
+		In case you are not familiar with the concept of system hooks in Windows, let 
+		me state a few brief descriptions:
+		<P><EM>A <U>system hook</U> allows you to insert a callback function which intercepts 
+				certain windows messages (e.g. mouse related messages).</EM>
+		<P><EM>A <U>local system hook</U> is a system hook that is called only when the 
+				specified messages are processed by a single thread.</EM>
+		<P><EM>A <U>global system hook</U> is a system hook that is called when the specified 
+				messages are processed by any application on the entire system.</EM>
+		<P>
+		There are several good articles which introduce the concept of system hooks. 
+		Rather than rehashing the introductory information here I'll simply refer 
+		readers to those articles for background information on system hooks. If you're 
+		familiar with the concept of system hooks, then you should be able to get 
+		everything you need from this article.
+		<P>&nbsp; &nbsp; <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/Windowing/Hooks/AboutHooks.asp?frame=true">
+				About Hooks</a> in the MSDN Library<br>
+			&nbsp; &nbsp; <A href="http://msdn.microsoft.com/msdnmag/issues/02/10/CuttingEdge/">
+				Cutting Edge - Windows Hooks in the .NET Framework</A> by Dino Esposito<BR>
+			&nbsp; &nbsp; <A href="http://www.thecodeproject.com/csharp/NetWin32Hooks.asp">Using 
+				Hooks from C#</A> by Don Kackman<BR>
+		<P>What we are going to cover in this article is extending this information to 
+			create a global system hook which is usable in .NET classes. We will develop a 
+			class library in C# and a DLL in unmanaged C++ which together will accomplish 
+			this goal.
+			<h2>Using the code</h2>
+		<p>Before we dig into developing this library, let's take a quick look at where we 
+			are headed. In this article we will develop a class library that installs <STRONG>global</STRONG>
+			system hooks and exposes the events processed by the hook as a .NET event of 
+			our hook class. To illustrate the usage of the system hook classes, we will 
+			create a mouse event hook and keyboard event hook in a Windows Forms application written in C#.</p>
+		<P>The class library can be used to create any type of system hook. There are two 
+			that come pre-built: <code>MouseHook</code> and <code>KeyboardHook</code>. We
+			have also included specialized versions of these classes called <code>MouseHookExt</code> 
+			and <code>KeyboardHookExt</code> respectively.
+			Following the model set by those classes you can easily build system hooks for 
+			any of the 15 hook event types in the Win32 API. Also, the entire class library 
+			comes with a compiled HTML help file which documents the classes. Be sure to 
+			look at this help file if you decide to use this library in your applications.</P>
+		<P>The usage and lifecycle of the <code>MouseHook</code> class is quite simple. 
+			First we create an instance of <code>MouseHook</code> class. We must pass the 
+			application's instance pointer to the constructor.</P>
+		<pre>   IntPtr appInstance = GetApplicationInstance();
+   mouseHook = new MouseHook(appInstance); // mouseHook is a member variable</pre>
+		<P>Next, we wire up the <code>MouseEvent</code> event to a class level method.</P>
+		<pre>    mouseHook.MouseEvent += new MouseHook.MouseEventHandler(mouseHook_MouseEvent);
+
+    // ...
+
+    private void mouseHook_MouseEvent(MouseEvents mEvent, int x, int y)
+    {
+        string msg = string.Format("Mouse event: {0}: ({1},{2}).", mEvent.ToString(), x, y);
+        AddText(msg); // Adds the message to the text box.
+    }</pre>
+		<P>To start receiving mouse events, simply install the hook.</P>
+		<pre>    mouseHook.InstallHook();</pre>
+		<p>To stop receiving events simply uninstall the hook.</p>
+		<pre>    mouseHook.UninstallHook();</pre>
+		<p>You can also call <code>Dispose</code> which will uninstall the hook as well.</p>
+		<P>It is critically important that you uninstall the hook when your application 
+			exits. Leaving system hooks installed will slow message processing for all 
+			applications on the system at best. It could even cause one or more processes 
+			to become unstable. To put it in more technical terms that speaks to the 
+			developer in all of us: It's really really bad to forget this part. So be sure 
+			to remove your system hooks when you are done with them. We ensure that we 
+			remove the system hooks in our sample application by adding a <code>Dispose</code>
+			call in the form's <code>Dispose</code> method.</P>
+		<pre>    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if (mouseHook != null)
+            {
+                mouseHook.Dispose();
+                mouseHook = null;
+            }
+        
+            // ...
+        }
+    }</pre>
+		<P>That's all there is to using the class library. It comes with two system hook 
+			classes and is easily extendable.</P>
+		<H2>Building The Library</H2>
+		<P>
+		There are two major components of the library. The first part is a C# class 
+		library which you use directly in your application. That class library, in 
+		turn, uses an unmanaged C++ DLL internally to manage the system hooks directly. 
+		We'll first discuss developing the C++ part. Next we'll cover how to use this 
+		library in C# to build a general hooking class. As we discuss the C++ / C# 
+		interaction, we'll pay particular attention to how the C++ methods and data 
+		types map to .NET methods and data types.
+		<P>
+		You may be wondering why we need two libraries, especially an unmanaged C++ 
+		DLL. You may have noticed also that two of the reference articles mentioned in 
+		the background section of this article do not use any unmanaged code. To this I 
+		say, "Exactly! That's why I'm writing this article." When you think about how 
+		system hooks actually implement their functionality, it makes sense that we 
+		need unmanaged code. In order for a global system hook to work, Windows inserts 
+		your DLL into the process space of every running process. Since most processes 
+		are not .NET processes they cannot execute .NET assemblies directly. We need an 
+		unmanaged code stub which Windows can insert into all the processes that will 
+		be hooked.
+		<p>The first order of business is to provide a mechanism to pass a .NET delegate 
+			into our C++ library. Thus we defined the following function (<code>SetUserHookCallback</code>) 
+			and function pointer (<code>HookProc</code>) in C++.</p>
+		<pre>    int SetUserHookCallback(HookProc userProc, UINT hookID)</pre>
+		<pre>    typedef void (CALLBACK *HookProc)(int code, WPARAM w, LPARAM l)</pre>
+		<P>The second parameter to <code>SetUserHookCallback</code> is the type of hook 
+			that this function pointer is intended to be used with. Now we have to define 
+			corresponding methods and delegates in C# to use this code. Here is how we map 
+			this to C#.</P>
+		<pre>    private static extern SetCallBackResults SetUserHookCallback(HookProcessedHandler hookCallback, HookTypes hookType)</pre>
+		<pre>    protected delegate void HookProcessedHandler(int code, UIntPtr wparam, IntPtr lparam)</pre>
+		<pre>
+    public enum HookTypes
+    {
+       JournalRecord         = 0,
+       JournalPlayback       = 1,
+       // ...
+       KeyboardLL            = 13,
+       MouseLL               = 14
+    };
+</pre>
+		<P>First we import the <code>SetUserHookCallback</code> function as a static 
+			external method of our abstract base hook class <code>SystemHook</code> using 
+			the <code>DllImport</code> attribute. To accomplish this we have to map some 
+			rather foreign data types. First we have to create a delegate to serve as our 
+			function pointer. This is done by defining the <code>HookProcessHandler</code> as 
+			above. We need a function which in C++ has the signature <code>(int, WPARAM, 
+				LPARAM)</code>. In the Visual Studio.NET C++ compiler <code>int</code> is 
+			the same as in C#. That is <code>int</code> is <code>Int32</code> in both C++ 
+			and C#. This has not always been the case. Some compilers treat C++ int as <code>Int16</code>. 
+			We're sticking with the Visual Studio.NET C++ compiler for this project so we 
+			won't worry about other definitions due to compiler differences. Finally, we 
+			have defined the <code>HookTypes</code> enumeration by explicitly setting the 
+			enumeration values to the same ones defining the C++ equivalents of the hook 
+			types. These C++ definitions are located in the winuser.h header file.</P>
+		<P>Next we need to pass <code>WPARAM</code> and <code>LPARAM</code> values around 
+			in C#. These are really pointers to C++ <code>UINT</code> and <code>LONG</code> 
+			values respectively. In C# speak, that's pointers to <code>uint</code> and <code>int</code>. 
+			In case you're not sure what a <code>WPARAM</code> is, you can simply look it 
+			up where it is defined by right clicking in the C++ code and choosing "Go to 
+			definition". That takes you to this definition in windef.h.</P>
+		<pre>   // From windef.h:
+   typedef UINT_PTR            WPARAM;
+   typedef LONG_PTR            LPARAM;
+</pre>
+		<P>Therefore we chose <code>System.UIntPtr</code> and <code>System.IntPtr</code> as 
+			our variable types for the <code>WPARAM</code> and <code>LPARAM</code> types 
+			when they get to C#.</P>
+		<P>Now let's see how the hook base class uses these imported methods to pass a 
+			callback function (delegate) to C++ which allows the C++ library to directly 
+			call into your system hook class instance. First, in the constructor, the <code>SystemHook</code>
+			class creates a delegate to the private method <code>InternalHookCallback</code>
+			which matches the <code>HookProcessedHandler</code> delegate signature. Then it 
+			passes this delegate and its <code>HookType</code> to the C++ library to 
+			register the callback using the <code>SetUserHookCallback</code> method as 
+			discussed above. Here it is in code.</P>
+		<pre>public SystemHook(HookTypes type, IntPtr appInstance)
+{
+   this.appInstance = appInstance;
+   this.type = type;
+
+   processHandler = new HookProcessedHandler(InternalHookCallback);
+   SetUserHookCallback(processHandler, this.type);
+}</pre>
+		<p>The implementation of <code>InternalHookCallback</code> is quite simple. <code>InternalHookCallback</code>
+			just passes the call to the abstract method <code>HookCallback</code> while 
+			wrapping it in a catch-all <code>try/catch</code> block. This simplifies the 
+			implementation in the derived classes and guards the C++ code from uncaught 
+			.NET exceptions. Remember, once everything is wired up the C++ hook will be 
+			calling this method directly.</p>
+		<pre>[MethodImpl(MethodImplOptions.NoInlining)]
+private void InternalHookCallback(int code, UIntPtr wparam, IntPtr lparam)
+{
+   try
+   {
+      HookCallback(code, wparam, lparam);
+   }
+   catch {}
+}
+</pre>
+		<P>We have added a method implementation attribute which tells the compiler to not 
+			inline this method. This is not optional. At least it was required before I 
+			added the <code>try/catch</code>. It seems that for some reason the compiler 
+			was attempting to inline this method which caused all sorts of trouble with the 
+			delegate that was wrapping it. The C++ layer would then call back and the 
+			method would be gone.</P>
+		<P>Now, let's look at how a derived class with a specific <code>HookType</code> receives 
+			and processes hook events. Here is the virtual <code>HookCallback</code> method 
+			implementation for the <code>MouseHook</code> class.
+		</P>
+		<pre>   protected override void HookCallback(int code, UIntPtr wparam, IntPtr lparam)
+   {
+      if (MouseEvent == null)
+      {
+         return;
+      }
+      
+      int x = 0, y = 0;
+      MouseEvents mEvent = (MouseEvents)wparam.ToUInt32();
+
+      switch(mEvent)
+      {
+         case MouseEvents.LeftButtonDown:
+            GetMousePosition(wparam, lparam, ref x, ref y);
+            break;
+         // ...
+      }
+
+      MouseEvent(mEvent, new Point(x, y));
+   }</pre>
+		<P>First, note that this class defines an event <code>MouseEvent</code> which it 
+			fires whenever it receives a hook event. This class transforms the data from <code>WPARAM</code>
+			and <code>LPARAM</code> types to data meaningful for mouse events in .NET 
+			before firing its event. That saves the consumers of the class from having to 
+			worry about interpreting these data structures. This class uses the imported <code>GetMousePosition</code>
+			function that we have defined in the C++ DLL to convert these values. See the 
+			discussion a few paragraphs below for more details on this.</P>
+		<P>In this method, we check that someone is actually listening to the event. If 
+			not, there is no reason to continue processing the event. Then we convert our <code>
+				WPARAM</code> to a <code>MouseEvents</code> enumeration type. We have 
+			carefully constructed the <code>MouseEvents</code> enumeration to exactly match 
+			the constants they mirror in C++ by value. This allows us to simply cast the 
+			pointer's value to the enumerated type. Be careful though, this cast will 
+			succeed even if the value of the <code>WPARAM</code> does not match an 
+			enumerated value. The value of <code>mEvent</code> will simply be undefined 
+			(not <code>null</code>, just not one of the enumeration values). See the method <code>
+				System.Enum.IsDefined</code> for details on this.</P>
+		<P>Next after determining the type of event we have received, the class fires the 
+			event and the consumer is notified of the type of mouse event and the location 
+			of the mouse during that event.</P>
+		<P>A final note about converting the <code>WPARAM</code> and <code>LPARAM</code>
+			values: For each type of event, the values and meanings of these variables are 
+			different. Therefore in each hook type, we must interpret the values 
+			differently. I chose to perform this conversion in C++ rather than trying to 
+			mimic complex C++ structures and pointers in C#. For example, the previous 
+			class used a C++ function called <code>GetMousePosition</code>. Here's that 
+			method from the C++ DLL.</P>
+		<pre>   bool GetMousePosition(WPARAM wparam, LPARAM lparam, int &amp; x, int &amp; y)
+   {
+      MOUSEHOOKSTRUCT * pMouseStruct = (MOUSEHOOKSTRUCT *)lparam;
+      x = pMouseStruct-&gt;pt.x;
+      y = pMouseStruct-&gt;pt.y;
+
+      return true;
+   }
+			</pre>
+		<P>Rather than attempting to map the <code>MOUSEHOOKSTRUCT</code> structure pointer 
+			to C#, we simply pass it back to the C++ layer temporarily to extract the 
+			values we need. Note that because we need to return several values from this 
+			call we passed our integers as reference variables. This directly maps to <code>int 
+				*</code> in C#. But we can override this behavior by selecting the right 
+			signature to import this method.</P>
+		<pre>   private static extern bool InternalGetMousePosition(UIntPtr wparam, IntPtr lparam, ref int x, ref int y)</pre>
+		<P>By defining the integer parameters as <code>ref int</code> we get our values 
+			passed by reference to C++. We could have also used <code>out int</code> if we 
+			wanted.</P>
+		<H2>Extras</H2>
+		<P><STRONG>Library Documentation</STRONG>: We have included fairly thorough code 
+			documentation with the ManagedHooks class library. This is converted to 
+			standard help XML via Visual Studio.NET when compiling in the "Documentation" 
+			build configuration. Finally we have used <a href="http://ndoc.sourceforge.net/wiki">
+				NDoc</a> to convert this to Compiled HTML Help (CHM). This help file is 
+			available simply by clicking the "Managed Hooks.chm" file in the Solution 
+			Explorer of the solution or by looking in the downloadable ZIP files associated 
+			with this article.</P>
+		<P><STRONG>Enhanced Intellisense</STRONG>: In case you are not familiar with how 
+			Visual Studio.NET uses the compiled XML file (pre-NDoc output) for enhancing 
+			intellisense for projects that reference libraries, let me say something about 
+			that here. If you decide to use this class library in your applications, you 
+			might consider copying a stable build of the library to a location where you 
+			will reference it. Then also copy the XML documentation file 
+			(SystemHooks\ManagedHooks\bin\Debug\Kennedy.ManagedHooks.xml) to the same 
+			location. When you add a reference to the library, Visual Studio.NET will 
+			automatically read that file and use it to add intellisense documentation. This 
+			is very helpful, especially for third party libraries such as this one.</P>
+		<P><STRONG>Unit Tests</STRONG>: I believe all libraries should have unit 
+			tests associated with them. Since I am a partner and software engineer in a
+			company which makes unit testing software for .NET, this should come as no 
+			surprise to anyone. Thus you will find a&nbsp;unit test project in the 
+			solution entitled ManagedHooksTests. To run the unit tests, you will need 
+			to download and install HarnessIt from
+		</P>
+		<P>&nbsp;&nbsp;&nbsp;&nbsp; <A href="http://www.unittesting.com">http://www.unittesting.com</A></P>
+		<P>This download is a free trial version of our commercial unit testing software.
+		</P>
+		<P> In the unit tests, I paid special attention to this where invalid arguments to 
+			methods could end up causing C++ memory exceptions. Although this library is 
+			fairly simple, the unit tests did help me discover a few bugs in the more
+			subtle situations.</P>
+		<P><STRONG>Unmanaged/Managed Debugging</STRONG>: One of the things that is tricky about 
+			mixed solutions such as this one (managed and unmanaged code) is debugging. If 
+			you want to be able to step into the C++ code or set break points in the C++ 
+			code, you must enable unmanaged debugging. This is a project setting in Visual 
+			Studio.NET. Note that you can step between the managed and unmanaged layers 
+			very nicely, but unmanaged debugging does significantly slow the load time and 
+			execution speed of the application while in the debugger.</P>
+		<h2>A Final Warning</h2>
+		<p>Let me paraphrase Dr. Seuss in the famous children's book <EM>Fox in Sox</EM> in 
+			providing this final warning.</p>
+		<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <STRONG>Take is slowly. These classes are dangerous.</STRONG></P>
+		<P>System hooks are powerful. And, with that power comes responsibility. When 
+			something goes wrong with system hooks, they don't just break your application. 
+			They can break <STRONG>every</STRONG> application running on your system. It is 
+			unlikely that it would actually come to that extreme. Nonetheless, you need to 
+			double and triple check your code when using system hooks.</P>
+		<h2>History</h2>
+		<p><STRONG>March 5, 2004</STRONG>: This is the initial release of the article. No 
+			changes.</p>
+		<P>
+			<!-------------------------------    That's it!   ---------------------------></P>
+		</CODE></CODE></CODE></CODE>
+	</body>
+</html>

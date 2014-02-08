@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <file>
+    <version>1.0</version>
+  </file>
+  <assemblies>
+    <assembly>bin\Debug\Kennedy.ManagedHooks.Tests.dll</assembly>
+  </assemblies>
+  <test_execution>
+    <engine>UnitedBinary.HarnessIt.TestEngine.Local.LocalExecutionEngine</engine>
+    <settings />
+  </test_execution>
+</project>

@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Docs>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                                  General                                         -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<General>
+		<Empty>
+			<summary />
+		</Empty>
+	</General>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                                 HookTypes                                        -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<HookTypes>
+		<enum>
+			<summary>
+				Represents the types of system hooks available in Windows.
+			</summary>
+			<remarks>
+				Currently only <c>KeyboardLL</c> and <c>MouseLL</c> are supported
+				in this library. But it is relatively easy to extend it for any
+				given hook type by following the provided examples.
+			</remarks>
+		</enum>
+	</HookTypes>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                               KeyboardEvents                                     -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<KeyboardEvents>
+		<enum>
+			<summary>
+				Represents the types of keyboard events that will be received when
+				hooking keyboard events.
+			</summary>
+		</enum>
+		<KeyboardEventHandler>
+			<summary>
+				A delegate defining the method signature for the KeyboardEvent event.
+			</summary>
+		</KeyboardEventHandler>
+		<KeyboardEventHandlerExt>
+			<summary>
+				A delegate defining the method signature for the KeyboardEventExt event.
+			</summary>
+		</KeyboardEventHandlerExt>
+	</KeyboardEvents>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                                 MouseEvents                                      -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<MouseEvents>
+		<enum>
+			<summary>
+				Represents the types of mouse events that will be received when
+				hooking mouse events.
+			</summary>
+			<remarks>
+				Note that this list is not exhaustive. For example, third button clicks
+				(typically the pushing the mouse wheel) will not be processed. This
+				can be extended by modifying the source code to receive the desired events.
+			</remarks>
+		</enum>
+		<MouseEventHandler>
+			<summary>
+				A delegate defining the method signature for the MouseEvent event.
+			</summary>
+		</MouseEventHandler>
+		<MouseEventHandlerExt>
+			<summary>
+				A delegate definingthe method signature for the MouseEventExt event.
+			</summary>
+		</MouseEventHandlerExt>
+	</MouseEvents>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                                 VirtualKeys                                      -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<VirtualKeys>
+		<enum>
+			<summary>
+				Represents the keys from keyboard events received from Win32 events.
+			</summary>
+			<remarks>
+				It would be ideal if we could simply use the <c>System.Windows.Forms.Keys</c>
+				enumeration. But there is no direct translation from the integers received
+				from the C++ layer (Win32 key codes) and this enumeration. Thus we have
+				included the <c>VirtualKeys</c> enumeration along with the
+				<c>ConvertKeyCode</c> to bridge that gap.
+			</remarks>
+		</enum>
+	</VirtualKeys>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                           ManagedHooksException                                  -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<ManagedHooksException>
+		<Class>
+			<summary>
+				This class represents exceptions that originate from the ManagedHooks classes.
+			</summary>
+			<remarks>
+				Note that other exceptions are possible. For example, where appropriate, these
+				classes throw <see cref="ArgumentException" /> and 
+				<see cref="ArgumentNullException" /> among others.
+			</remarks>
+		</Class>
+		<ctor>
+			<overloads>Creates a new instance of the ManagedHooksException class.</overloads>
+			<summary>
+				Creates an empty exception.
+			</summary>
+		</ctor>
+		<ctor_string>
+			<summary>
+				Creates an exception with a message.
+			</summary>
+		</ctor_string>
+		<ctor_string_exception>
+			<summary>
+				Creates an exception with a message and inner exception.
+			</summary>
+		</ctor_string_exception>
+	</ManagedHooksException>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                       HookTypeNotImplementedException                            -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<HookTypeNotImplementedException>
+		<Class>
+			<summary>
+				An exception indicating that there is already a class hooking a particular event type.
+			</summary>
+			<remarks>
+				Each event type can only be hooked by one class at any given time. This is
+				the type of exception you get when you break that rule.
+			</remarks>
+		</Class>
+	</HookTypeNotImplementedException>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                              IKeyboardHook                                       -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<IKeyboardHook>
+		<Interface>
+			<summary>
+				This interface represents a system hook of the type 
+				<see cref="HookTypes.KeyboardLL" /> (low level keyboard system events).
+			</summary>
+		</Interface>
+		<KeyboardEvent>
+			<summary>
+				Event triggered when a keyboard hook related system hook event occurs.
+			</summary>
+		</KeyboardEvent>
+		<FilterMessage>
+			<summary>
+				Tells the library to ignore the specified event type and not to fire events of that type.
+			</summary>
+			<param name="eventType">The type of event to ignore, for example, KeyboardEvents.SysKeyDown.</param>
+		</FilterMessage>
+		<InstallHook>
+			<summary>
+				Installs the specified type of system hook.
+			</summary>	
+		</InstallHook>
+		<UninstallHook>
+			<summary>
+				Uninstalls the specified type of system hook.
+			</summary>	
+		</UninstallHook>
+	</IKeyboardHook>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                               IMouseHook                                         -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<IMouseHook>
+		<Interface>
+			<summary>
+				This interface provides access to low level mouse hook events. For typical use
+				the <see cref="IMouseHookLite" /> interface is a better choice in place of this 
+				interface.
+			</summary>
+		</Interface>
+		<MouseEvent>
+			<summary>
+				Event triggered when a mouse hook related system hook event occurs.
+			</summary>
+		</MouseEvent>
+		<FilterMessage>
+			<summary>
+				Tells the library to ignore the specified event type and not to fire events of that type.
+			</summary>
+			<param name="eventType">The type of event to ignore, for example, KeyboardEvents.SysKeyDown.</param>
+		</FilterMessage>
+		<InstallHook>
+			<summary>
+				Installs the specified type of system hook.
+			</summary>	
+		</InstallHook>
+		<UninstallHook>
+			<summary>
+				Uninstalls the specified type of system hook.
+			</summary>	
+		</UninstallHook>
+	</IMouseHook>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                              IMouseHookExt                                       -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<IMouseHookExt>
+		<Interface>
+			<summary>
+				Provides access to higher level mouse hook events such as the mouse move,
+				button events, and wheel events. Use <see cref="IMouseHookLite" /> in place
+				of this interface if you do not want to track the MouseMove event.
+			</summary>
+			<remarks>
+				This interface is similar to <see cref="IMouseHook" /> except that
+				separates the various mouse events into separate events such as
+				MouseDown, MouseUp, etc.
+			</remarks>
+		</Interface>
+		<LeftButtonDown>
+			<summary>
+				This event is fired when the left mouse button is pushed down.
+			</summary>
+		</LeftButtonDown>
+		<RightButtonDown>
+			<summary>
+				This event is fired when the right mouse button is pushed down.
+			</summary>
+		</RightButtonDown>
+		<LeftButtonUp>
+			<summary>
+				This event is fired when the left mouse button is released.
+			</summary>
+		</LeftButtonUp>
+		<RightButtonUp>
+			<summary>
+				This event is fired when the right mouse button is released.
+			</summary>
+		</RightButtonUp>
+		<MouseWheel>
+			<summary>
+				This event is fired when the mouse wheel is spun.
+			</summary>
+		</MouseWheel>
+		<Move>
+			<summary>
+				This event is fired when the mouse is moved.
+			</summary>
+		</Move>
+	</IMouseHookExt>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                             IMouseHookLite                                       -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<IMouseHookLite>
+		<Interface>
+			<summary>
+				The IMouseHookLite interface provides access to basic mouse hook events
+				but specifically does not monitor MouseMove events. Prefer this interface
+				when you do not need to track mouse movement (only mouse button events 
+				and mouse wheel events).
+			</summary>
+			<remarks>
+				By suppressing the MouseMove event, this hook imposes a much lighter 
+				load on the system than the other mouse event hooking interfaces. 
+				The MouseMove event is significantly more costly than most hooking 
+				events. By suppressing this event, the system hook will avoid unnecessary 
+				frequent mouse move events.
+			</remarks>
+		</Interface>
+	</IMouseHookLite>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                               HookFactory                                        -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<HookFactory>
+		<Class>
+			<summary>
+				The hook factory class is a general hook interface factory which creates
+				class instances supporting the requested interfaces.
+			</summary>
+			<remarks>
+				If you are unfamiliar with the factory design pattern, here is a closely related
+				pattern that should provide some background: 
+				<a href="http://en.wikipedia.org/wiki/Abstract_factory_pattern" target="_blank">
+				http://en.wikipedia.org/wiki/Abstract_factory_pattern</a>.
+			</remarks>
+		</Class>
+		<CreateKeyboardHook>
+			<summary>Creates a low level keyboard hook class.</summary>
+			<returns>The interface to the new object.</returns>
+		</CreateKeyboardHook>
+		<CreateKeyboardHook_impl>
+			<summary>Creates a low level keyboard hook class based on the specified implementation.</summary>
+			<param name="keyboardImpl">A custom version of the implementation class.</param>
+			<returns>The interface to the new object.</returns>
+			<remarks>This method is intended for testing purposes.</remarks>
+		</CreateKeyboardHook_impl>
+		<CreateKeyboardHookExt>
+			<summary>Creates a low level keyboard hook class with extended event filtering.</summary>
+			<returns>The interface to the new object.</returns>
+		</CreateKeyboardHookExt>
+		<CreateKeyboardHookExt_impl>
+			<summary>Creates a low level keyboard hook class with extended event filtering.</summary>
+			<param name="keyboardImpl">A custom version of the implementation class.</param>
+			<returns>The interface to the new object.</returns>
+			<remarks>This method is intended for testing purposes.</remarks>
+		</CreateKeyboardHookExt_impl>
+		<CreateMouseHook>
+			<summary>Creates a low level mouse hook class.</summary>
+			<returns>The interface to the new object.</returns>
+		</CreateMouseHook>
+		<CreateMouseHook_impl>
+			<summary>Creates a low level mouse hook class.</summary>
+			<returns>The interface to the new object.</returns>
+			<param name="mouseImpl">A custom version of the implementation class.</param>
+			<remarks>This method is intended for testing purposes.</remarks>
+		</CreateMouseHook_impl>
+		<CreateMouseHookExt>
+			<summary>Creates a low level mouse hook class.</summary>
+			<returns>The interface to the new object.</returns>
+		</CreateMouseHookExt>
+		<CreateMouseHookExt_impl>
+			<summary>Creates a low level mouse hook class.</summary>
+			<returns>The interface to the new object.</returns>
+			<param name="mouseImpl">A custom version of the implementation class.</param>
+			<remarks>This method is intended for testing purposes.</remarks>
+		</CreateMouseHookExt_impl>
+		<CreateMouseHookLite>
+			<summary>Creates a low level mouse hook class.</summary>
+			<returns>The interface to the new object.</returns>
+		</CreateMouseHookLite>
+		<CreateMouseHookLite_impl>
+			<summary>Creates a low level mouse hook class.</summary>
+			<returns>The interface to the new object.</returns>
+			<param name="mouseImpl">A custom version of the implementation class.</param>
+			<remarks>This method is intended for testing purposes.</remarks>
+		</CreateMouseHookLite_impl>
+	</HookFactory>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                         KeyboardHookEventArgs                                    -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<KeyboardHookEventArgs>
+		<Class>
+			<summary>
+				Keyboard hook event argument class.
+			</summary>
+		</Class>
+		<ctor>
+			<summary />
+		</ctor>
+		<ctor_key>
+			<summary>
+				Creates a keyboard event argument based on the specified key.
+			</summary>
+			<param name="key">The key to associate with the event.</param>
+			<param name="alt">Specifies whether the alt key was pressed.</param>
+			<param name="ctrl">Specifies whether the control key was pressed.</param>
+			<param name="shift">Specifies whether the shift key was pressed.</param>
+			<param name="capsLock">Specifies whether the caps lock key was toggled on.</param>
+		</ctor_key>
+		<ToString>
+			<summary>Returns a string representation of the object.</summary>
+			<returns>A string representation of the object.</returns>
+		</ToString>
+		<Key>
+			<summary>
+				The key that has triggered the event.
+			</summary>
+		</Key>
+		<Cancel>
+			<summary>
+				Indicates whether to cancel the key event for the foreground application.
+			</summary>
+			<remarks>
+				By setting this value to true, the system hook will prevent the key event 
+				from ever reaching an application that is not itself using system hooks 
+				of some sort.
+			</remarks>
+		</Cancel>
+		<Alt>
+			<summary>
+				Indicates whether the alt key was pressed during the event.
+			</summary>
+		</Alt>
+		<Ctrl>
+			<summary>
+				Indicates whether the control key was pressed during the event.
+			</summary>
+		</Ctrl>
+		<Shift>
+			<summary>
+				Indicates whether the shift key was pressed during the event.
+			</summary>
+		</Shift>
+		<CapsLock>
+			<summary>
+				Indicates whether the caps lock key was pressed during the event.
+			</summary>
+		</CapsLock>
+	</KeyboardHookEventArgs>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                              KeyboardHookExt                                     -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<IKeyboardHookExt>
+		<Interface>
+			<summary>
+				This interface represents a system hook of the type 
+				<see cref="HookTypes.KeyboardLL" /> (low level keyboard system events).
+			</summary>
+			<remarks>
+				<para>
+					This class differs from the <see cref="IKeyboardHook" /> class in that it breaks
+					the types of keyboard events into categories. For example, there is a KeyDown
+					event and a KeyUp event.
+				</para>
+			</remarks>
+		</Interface>
+		<ctor>
+			<summary>
+				Creates a new instance of the KeyboardHook class.
+			</summary>
+		</ctor>
+		<KeyDown>
+			<summary>
+				Fired when a standard (non-system) key is pushed down.
+			</summary>
+		</KeyDown>
+		<KeyUp>
+			<summary>
+				Fired when a standard (non-system) key is released.
+			</summary>
+		</KeyUp>
+		<SystemKeyDown>
+			<summary>
+				Fired when a system key is pushed down.
+			</summary>
+		</SystemKeyDown>
+		<SystemKeyUp>
+			<summary>
+				Fired when a system key is released.
+			</summary>
+		</SystemKeyUp>
+	</IKeyboardHookExt>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                             MouseHookEventArgs                                   -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<MouseHookEventArgs>
+		<Class>
+			<summary>
+				Mouse hook event argument class.
+			</summary>
+		</Class>
+		<ctor>
+			<summary />
+		</ctor>
+		<ctor_key>
+			<summary>
+				Creates an event argument class based on the event parameters.
+			</summary>
+			<param name="location">The location of the cursor when the event occurred.</param>
+			<param name="alt">Indicates whether the alt key was pressed during the event.</param>
+			<param name="ctrl">Indicates whether the control key was pressed during the event.</param>
+			<param name="shift">Indicates whether the shift key was pressed during the event.</param>
+		</ctor_key>
+		<Location>
+			<summary>
+				The location of the cursor when the event occurred.
+			</summary>
+		</Location>
+		<Alt>
+			<summary>
+				Indicates whether the alt key was pressed during the event.
+			</summary>
+		</Alt>
+		<Ctrl>
+			<summary>
+				Indicates whether the control key was pressed during the event.
+			</summary>
+		</Ctrl>
+		<Shift>
+			<summary>
+				Indicates whether the shift key was pressed during the event.
+			</summary>
+		</Shift>
+		<Cancel>
+			<summary>
+				Indicates whether to cancel the mouse event for the target application.
+			</summary>
+			<remarks>
+				By setting this value to true, the system hook will prevent the mouse event 
+				from ever reaching an application that is not itself using system hooks 
+				of some sort.
+			</remarks>
+		</Cancel>
+		<Empty>
+			<summary>
+				A static instance that can be used when no information is available. 
+				For example, during the mouse wheel events.
+			</summary>
+		</Empty>
+		<ToString>
+			<summary>Returns a string representation of the object.</summary>
+			<returns>A string representation of the object.</returns>
+		</ToString>
+	</MouseHookEventArgs>
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+	<!--                                 ISystemHook                                      -->
+	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->	
+	<ISystemHook>
+		<Interface>
+			<summary>
+				The common interface shared among all system hook interfaces.
+			</summary>
+		</Interface>
+		<IsHooked>
+			<summary>
+				Indicates whether the system hook is currently installed for this instance.
+			</summary>
+		</IsHooked>
+	</ISystemHook>
+</Docs>

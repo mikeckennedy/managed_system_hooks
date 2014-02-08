@@ -1,0 +1,15 @@
+
+License Agreement for SystemHook Sample Code and Application(s)
+
+First and foremost, this code and compiled software is provided for demostration
+purposes *only*. It is provided AS IS and without any type of warranty
+(explicit or implied). Use it entirely at your own risk.
+
+You are free to use this source code and library for any purpose you see
+fit (commercial or otherwise). Except that you may not take it and
+present it as yours (modified or otherwise) without giving Michael Kennedy
+proper credit.
+
+Note also that while this software was developed by Michael Kennedy,
+he does not support this code. i.e. Do not contact me for support
+on this code.

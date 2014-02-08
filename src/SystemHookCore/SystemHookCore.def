@@ -1,0 +1,11 @@
+LIBRARY	SystemHookCore
+
+EXPORTS
+	SetUserHookCallback
+	InitializeHook
+	UninitializeHook
+	Dispose
+	FilterMessage
+	
+	GetMousePosition
+	GetKeyboardReading

@@ -1,0 +1,189 @@
+<html dir="LTR">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=Windows-1252" />
+    <meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5" />
+    <title>Kennedy.ManagedHooks</title>
+    <xml>
+    </xml>
+    <link rel="stylesheet" type="text/css" href="MSDN.css" />
+  </head>
+  <body id="bodyID" class="dtBODY">
+    <div id="nsbanner">
+      <div id="bannerrow1">
+        <table class="bannerparthead" cellspacing="0">
+          <tr id="hdr">
+            <td class="runninghead">Managed Hooks</td>
+            <td class="product">
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div id="TitleRow">
+        <h1 class="dtH1">Kennedy.ManagedHooks Namespace</h1>
+      </div>
+    </div>
+    <div id="nstext">
+      <p>
+        <a href="Kennedy.ManagedHooksHierarchy.html">Namespace hierarchy</a>
+      </p>
+      <h3 class="dtH3">Classes</h3>
+      <div class="tablediv">
+        <table class="dtTABLE" cellspacing="0">
+          <tr valign="top">
+            <th width="50%">Class</th>
+            <th width="50%">Description</th>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.HookFactory.html">HookFactory</a>
+            </td>
+            <td width="50%"> The hook factory class is a general hook interface factory which creates class instances supporting the requested interfaces. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.HookTypeNotImplementedException.html">HookTypeNotImplementedException</a>
+            </td>
+            <td width="50%"> An exception indicating that there is already a class hooking a particular event type. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.KeyboardHookEventArgs.html">KeyboardHookEventArgs</a>
+            </td>
+            <td width="50%"> Keyboard hook event argument class. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.ManagedHooksException.html">ManagedHooksException</a>
+            </td>
+            <td width="50%"> This class represents exceptions that originate from the ManagedHooks classes. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.MouseHookEventArgs.html">MouseHookEventArgs</a>
+            </td>
+            <td width="50%"> Mouse hook event argument class. </td>
+          </tr>
+        </table>
+      </div>
+      <h3 class="dtH3">Interfaces</h3>
+      <div class="tablediv">
+        <table class="dtTABLE" cellspacing="0">
+          <tr valign="top">
+            <th width="50%">Interface</th>
+            <th width="50%">Description</th>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.IKeyboardHook.html">IKeyboardHook</a>
+            </td>
+            <td width="50%"> This interface represents a system hook of the type <a href="Kennedy.ManagedHooks.HookTypes.html">KeyboardLL</a> (low level keyboard system events). </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.IKeyboardHookExt.html">IKeyboardHookExt</a>
+            </td>
+            <td width="50%"> This interface represents a system hook of the type <a href="Kennedy.ManagedHooks.HookTypes.html">KeyboardLL</a> (low level keyboard system events). </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.IMouseHook.html">IMouseHook</a>
+            </td>
+            <td width="50%"> This interface provides access to low level mouse hook events. For typical use the <a href="Kennedy.ManagedHooks.IMouseHookLite.html">IMouseHookLite</a> interface is a better choice in place of this interface. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.IMouseHookExt.html">IMouseHookExt</a>
+            </td>
+            <td width="50%"> Provides access to higher level mouse hook events such as the mouse move, button events, and wheel events. Use <a href="Kennedy.ManagedHooks.IMouseHookLite.html">IMouseHookLite</a> in place of this interface if you do not want to track the MouseMove event. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.IMouseHookLite.html">IMouseHookLite</a>
+            </td>
+            <td width="50%"> The IMouseHookLite interface provides access to basic mouse hook events but specifically does not monitor MouseMove events. Prefer this interface when you do not need to track mouse movement (only mouse button events and mouse wheel events). </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.ISystemHook.html">ISystemHook</a>
+            </td>
+            <td width="50%"> The common interface shared among all system hook interfaces. </td>
+          </tr>
+        </table>
+      </div>
+      <h3 class="dtH3">Delegates</h3>
+      <div class="tablediv">
+        <table class="dtTABLE" cellspacing="0">
+          <tr valign="top">
+            <th width="50%">Delegate</th>
+            <th width="50%">Description</th>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.KeyboardEventHandler.html">KeyboardEventHandler</a>
+            </td>
+            <td width="50%"> A delegate defining the method signature for the KeyboardEvent event. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.KeyboardEventHandlerExt.html">KeyboardEventHandlerExt</a>
+            </td>
+            <td width="50%"> A delegate defining the method signature for the KeyboardEventExt event. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.MouseEventHandler.html">MouseEventHandler</a>
+            </td>
+            <td width="50%"> A delegate defining the method signature for the MouseEvent event. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.MouseEventHandlerExt.html">MouseEventHandlerExt</a>
+            </td>
+            <td width="50%"> A delegate definingthe method signature for the MouseEventExt event. </td>
+          </tr>
+        </table>
+      </div>
+      <h3 class="dtH3">Enumerations</h3>
+      <div class="tablediv">
+        <table class="dtTABLE" cellspacing="0">
+          <tr valign="top">
+            <th width="50%">Enumeration</th>
+            <th width="50%">Description</th>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.HookTypes.html">HookTypes</a>
+            </td>
+            <td width="50%"> Represents the types of system hooks available in Windows. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.KeyboardEvents.html">KeyboardEvents</a>
+            </td>
+            <td width="50%"> Represents the types of keyboard events that will be received when hooking keyboard events. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.MouseEvents.html">MouseEvents</a>
+            </td>
+            <td width="50%"> Represents the types of mouse events that will be received when hooking mouse events. </td>
+          </tr>
+          <tr valign="top">
+            <td width="50%">
+              <a href="Kennedy.ManagedHooks.VirtualKeys.html">VirtualKeys</a>
+            </td>
+            <td width="50%"> Represents the keys from keyboard events received from Win32 events. </td>
+          </tr>
+        </table>
+      </div>
+      <hr />
+      <div id="footer">
+        <p>
+          <a>Copyright (c) 2004-2005 Michael Kennedy. All rights reserved.</a>
+        </p>
+        <p>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
